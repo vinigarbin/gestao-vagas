@@ -2,12 +2,11 @@ package br.garbin.gestao_vagas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Scope;
-import org.springframework.web.context.annotation.ApplicationScope;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "br.garbin.gestao_vagas" })
+@OpenAPIDefinition(info = @Info(title = "Gestão de vagas", description = "Api responsavel pela gestão de vagas", version = "1"))
 public class GestaoVagasApplication {
 
 	public static void main(String[] args) {

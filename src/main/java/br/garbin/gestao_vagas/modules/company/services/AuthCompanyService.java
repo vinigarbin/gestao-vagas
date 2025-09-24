@@ -1,7 +1,9 @@
 package br.garbin.gestao_vagas.modules.company.services;
 
+import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 
 import javax.naming.AuthenticationException;
 
@@ -14,7 +16,8 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import br.garbin.gestao_vagas.modules.company.dtos.AuthCompanyDTO;
+import br.garbin.gestao_vagas.modules.company.dto.AuthCompanyDTO;
+import br.garbin.gestao_vagas.modules.company.dto.AuthCompanyResponseDTO;
 import br.garbin.gestao_vagas.modules.company.repositories.CompanyRepository;
 
 @Service
@@ -29,7 +32,7 @@ public class AuthCompanyService {
   @Autowired
   private PasswordEncoder passwordEncoderService;
 
-  public String execute(AuthCompanyDTO authCompany) throws AuthenticationException {
+  public AuthCompanyResponseDTO execute(AuthCompanyDTO authCompany) throws AuthenticationException {
     var company = this.companyRepository.findByUsername(authCompany.getUsername()).orElseThrow(() -> {
       throw new UsernameNotFoundException("Username/password incorrect");
     });
@@ -40,11 +43,14 @@ public class AuthCompanyService {
       throw new AuthenticationException();
     }
 
+    var expires_in = Instant.now().plus(Duration.ofHours(2));
     Algorithm algorithm = Algorithm.HMAC256(secretKey);
     var token = JWT.create().withIssuer("javagas")
-        .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
-        .withSubject(company.getId().toString()).sign(algorithm);
+        .withExpiresAt(expires_in)
+        .withSubject(company.getId().toString())
+        .withClaim("roles", Arrays.asList("COMPANY")).sign(algorithm);
 
-    return token;
+    return AuthCompanyResponseDTO.builder().access_token(token).expires_in(expires_in.toEpochMilli()).build();
+
   }
 }

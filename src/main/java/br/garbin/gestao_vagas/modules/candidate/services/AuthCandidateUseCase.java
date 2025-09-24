@@ -22,7 +22,7 @@ import br.garbin.gestao_vagas.modules.candidate.dto.AuthCandidateResponseDTO;
 @Service
 public class AuthCandidateUseCase {
 
-  @Value("${security.token.secret.candidate}")
+  @Value("${security.jwt.secret.candidate}")
   private String secretKey;
 
   @Autowired
@@ -45,12 +45,11 @@ public class AuthCandidateUseCase {
     var expiresIn = Instant.now().plus(Duration.ofHours(2));
     var token = JWT.create()
         .withIssuer("javagas")
-        .withClaim("role", Arrays.asList("candidate"))
+        .withClaim("role", Arrays.asList("CANDIDATE"))
         .withExpiresAt(expiresIn)
         .withSubject(candidate.getId().toString())
         .sign(alg);
 
     return AuthCandidateResponseDTO.builder().access_token(token).expires_in(expiresIn.toEpochMilli()).build();
-
   }
 }
