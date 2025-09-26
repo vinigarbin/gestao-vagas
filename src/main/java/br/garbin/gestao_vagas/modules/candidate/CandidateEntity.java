@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +24,7 @@ public class CandidateEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
+  @Schema(description = "Nome do candidato", example = "Vinicius")
   private String name;
 
   @Pattern(message = "Username inválido", regexp = "\\S+")
@@ -32,6 +34,7 @@ public class CandidateEntity {
   private String email;
 
   @Length(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
+  @Schema(minLength = 6, description = "Senha do candidato", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
   private String password;
 
   private String description;

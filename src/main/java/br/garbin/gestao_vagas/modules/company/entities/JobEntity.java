@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class JobEntity {
   private UUID id;
 
   private String description;
+  @NotBlank(message = "Nível da vaga é obrigatório")
   private String level;
   private String benefits;
 
@@ -37,7 +39,7 @@ public class JobEntity {
   @JoinColumn(name = "company_id", insertable = false, updatable = false)
   private CompanyEntity companyEntity;
 
-  @Column(name = "company_id", nullable = false)
+  @Column(name = "company_id")
   private UUID companyId;
 
   @CreationTimestamp
