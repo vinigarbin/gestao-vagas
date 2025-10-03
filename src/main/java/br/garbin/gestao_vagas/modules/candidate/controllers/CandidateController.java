@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.garbin.gestao_vagas.modules.candidate.CandidateEntity;
 import br.garbin.gestao_vagas.modules.candidate.dto.ProfileCandidateResponseDTO;
+import br.garbin.gestao_vagas.modules.candidate.services.ApplyJobService;
 import br.garbin.gestao_vagas.modules.candidate.services.CreateCandidateUseCase;
 import br.garbin.gestao_vagas.modules.candidate.services.ListAllJobsByFilterUseCase;
 import br.garbin.gestao_vagas.modules.candidate.services.ProfileCandidateUseCase;
@@ -43,6 +44,9 @@ public class CandidateController {
 
   @Autowired
   private ListAllJobsByFilterUseCase listAllJobsByFilterUseCase;
+
+  @Autowired
+  private ApplyJobService applyJobService;
 
   @PostMapping()
   @Operation(summary = "Cadastro do candidato", description = "Essa função é responsavel por cadastrar um novo candidato")
@@ -91,5 +95,22 @@ public class CandidateController {
   @SecurityRequirement(name = "jwt_auth")
   public List<JobEntity> getJob(@RequestParam String filter) {
     return this.listAllJobsByFilterUseCase.execute(filter);
+  }
+
+  @PostMapping("/job/apply")
+  @PreAuthorize("hasRole('CANDIDATE')")
+  @SecurityRequirement(name = "jwt_auth")
+  @Operation(summary = "Candidatar a vaga", description = "Essa função é respons avel por cadastrar a candidatura do candidato a vaga")
+  public ResponseEntity<Object> applyJob(HttpServletRequest request, @RequestBody UUID idJob) {
+    var id = request.getAttribute("candidateId");
+
+    try {
+
+      var result = this.applyJobService.execute(UUID.fromString(id.toString()), idJob);
+
+      return ResponseEntity.ok().body(result);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
   }
 }

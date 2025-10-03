@@ -2,7 +2,9 @@ package br.garbin.gestao_vagas.modules.company.controllers;
 
 import java.util.UUID;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,16 +41,23 @@ public class JobController {
   })
   @GetMapping("/jobs")
   @SecurityRequirement(name = "jwt_auth")
-  public JobEntity create(@Valid @RequestBody CreateJobDTO job, HttpServletRequest request) {
+  public ResponseEntity<Object> create(@Valid @RequestBody CreateJobDTO job, HttpServletRequest request) {
     var companyId = request.getAttribute("companyId");
 
-    var jobEntity = JobEntity.builder()
-        .description(job.getDescription())
-        .level(job.getLevel())
-        .benefits(job.getBenefits())
-        .companyId(UUID.fromString(companyId.toString()))
-        .build();
+    try {
+      var jobEntity = JobEntity.builder()
+          .description(job.getDescription())
+          .level(job.getLevel())
+          .benefits(job.getBenefits())
+          .companyId(UUID.fromString(companyId.toString()))
+          .build();
 
-    return this.createJobService.execute(jobEntity);
+      var result = this.createJobService.execute(jobEntity);
+
+      return ResponseEntity.ok().body(result);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
   }
 }

@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfig {
 
   @Autowired
-  private SecurityFilter securityFilter;
+  private SecurityCompanyFilter companyFilter;
 
   @Autowired
   private SecurityCandidateFilter candidateFilter;
@@ -35,7 +35,7 @@ public class SecurityConfig {
             .requestMatchers("/candidates/auth").permitAll()
             .requestMatchers(SWAGGER_LIST).permitAll()
             .anyRequest().authenticated())
-        .addFilterBefore(securityFilter, BasicAuthenticationFilter.class)
+        .addFilterBefore(companyFilter, BasicAuthenticationFilter.class)
         .addFilterBefore(candidateFilter, BasicAuthenticationFilter.class);
 
     return http.build();
